@@ -3,21 +3,26 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	utils "github.com/jsb1138/go-rest-2/utils"
 )
 
-const (
-	host     string = "aurora-database-6-instance-1.cdmtvxl4golh.eu-central-1.rds.amazonaws.com"
-	port     int    = 5432
-	user     string = "postgres"
-	password string = "passgres123"
-	dbname   string = "postgres"
-)
-
 func DB(c *gin.Context) *sql.DB {
-	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASS")
+	dbname := os.Getenv("DB_NAME")
+
+	psqlconn := fmt.Sprintf("host=%s port=%v user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 	db, err := sql.Open("postgres", psqlconn)
 	utils.CheckError(err)
 
