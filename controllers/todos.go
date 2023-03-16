@@ -26,16 +26,3 @@ func Todos(c *gin.Context) {
 		})
 	}
 }
-
-func Welcome(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"status":  200,
-		"message": "Welcome!",
-	})
-}
-
-// func CheckError(err error) {
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// }

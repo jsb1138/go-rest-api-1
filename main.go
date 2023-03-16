@@ -17,6 +17,6 @@ func main() {
 
 	// insert
 	// insertStmt := `INSERT INTO todos VALUES ($1, $2, $3);`
-	// _, e := db.Exec(insertStmt, "BbB888888881Hw3333333", "JOEL", "BOYCHUK!!!!!")
+	// _, e := db.Exec(insertStmt, "BbB888888881Hw3333333", "test", "testing!")
 	// CheckError(e)
 }
