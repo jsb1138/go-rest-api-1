@@ -1,1 +1,6 @@
 .env
+keys
+  - linux-key.pem
+Dockerfile
+.dockerignore
+```
