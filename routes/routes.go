@@ -10,10 +10,10 @@ import (
 func Routes(router *gin.Engine) {
 
 	router.GET("/todos", controllers.Todos)
-	// router.POST("/todo", controllers.CreateTodo)
-	// router.GET("/todo/:todoId", controllers.GetSingleTodo)
-	// router.PUT("/todo/:todoId", controllers.EditTodo)
-	// router.DELETE("/todo/:todoId", controllers.DeleteTodo)
+	router.POST("/todo", controllers.CreateTodo)
+	router.PUT("/todo/:id", controllers.EditTodo)
+	router.DELETE("/todo/:id", controllers.DeleteTodo)
+	router.DELETE("/todos/:ids", controllers.DeleteTodos)
 
 	router.GET("/", Connected)
 	router.NoRoute(notFound)
