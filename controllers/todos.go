@@ -6,25 +6,29 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Masterminds/squirrel"
 	_ "github.com/lib/pq"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/jsb1138/go-rest-2/database"
-	utils "github.com/jsb1138/go-rest-2/utils"
 )
 
 type Todo struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
-}
-
-type ID struct {
-	ID string `json:"ids"`
+	Created_At  string `json:"created_at"`
+	Updated_At  string `json:"updated_at"`
 }
 
 func Todos(c *gin.Context) {
-	rows, err := db.DB().Query("SELECT * FROM todos")
+	query, args, err := squirrel.Select("*").From("todos").OrderBy("created_at ASC").ToSql()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	rows, err := db.DB().Query(query, args...)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -35,8 +39,11 @@ func Todos(c *gin.Context) {
 
 	for rows.Next() {
 		var todo Todo
-		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description)
-		utils.CheckError(err)
+		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Created_At, &todo.Updated_At)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 		todos = append(todos, todo)
 	}
 	if err := rows.Err(); err != nil {
@@ -61,7 +68,7 @@ func CreateTodo(c *gin.Context) {
 		return
 	}
 
-	_, err = db.DB().Exec("INSERT INTO todos VALUES ($1, $2, $3)", todo.ID, todo.Title, todo.Description)
+	_, err = db.DB().Exec("INSERT INTO todos VALUES ($1, $2, $3, $4, $5)", todo.ID, todo.Title, todo.Description, todo.Created_At, todo.Updated_At)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -83,7 +90,7 @@ func EditTodo(c *gin.Context) {
 	}
 
 	// Execute the UPDATE query on the database
-	_, err = db.DB().Exec("UPDATE todos SET title=$1, description=$2 WHERE id=$3", todo.Title, todo.Description, id)
+	_, err = db.DB().Exec("UPDATE todos SET title=$1, description=$2, updated_at=$3 WHERE id=$4", todo.Title, todo.Description, todo.Updated_At, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
