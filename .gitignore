@@ -1,6 +1,7 @@
 .env
 keys
   - linux-key.pem
+awscli-bundle
 Dockerfile
 .dockerignore
 ```
